@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 
-class NewTransations extends StatelessWidget {
+class NewTransations extends StatefulWidget {
   //  In Dart to accept value you have specify datatype to every property....
   final Function txFunction;
   // ConstructorCall....
   NewTransations(this.txFunction);
+
+  @override
+  State<NewTransations> createState() => _NewTransationsState();
+}
+
+class _NewTransationsState extends State<NewTransations> {
   final titleController = TextEditingController();
+
   final amountController = TextEditingController();
 
 // Create generic to make resuable......
-
   void submitData() {
     final enteredTitle = titleController.text;
     final enteredamount = double.parse(amountController.text);
@@ -18,11 +24,13 @@ class NewTransations extends StatelessWidget {
     if (enteredTitle.isEmpty || enteredamount <= 0) {
       return;
     }
-
-    txFunction(
+//Here we passing the form inputs value to the txfunction and onething is more important  we can access other class properties by using the widget property..............😎😎
+    widget.txFunction(
       enteredTitle,
       enteredamount,
     );
+
+    Navigator.of(context).pop();
   }
 
   @override
