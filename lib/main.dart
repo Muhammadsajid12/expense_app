@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import './widgets/new_transations.dart';
 import './widgets/transactions_List.dart';
 import './models/transactions.dart';
+import './widgets/chart.dart';
+import 'widgets/dialogBox.dart';
 
 void main() => runApp(MyApp());
 
@@ -11,9 +13,16 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter App',
       theme: ThemeData(
-          primarySwatch: Colors.green,
-          accentColor: Colors.amber,
-          fontFamily: 'Quicksand'),
+        primarySwatch: Colors.orange,
+        accentColor: Colors.orange,
+        errorColor: Colors.red,
+        fontFamily: 'Quicksand',
+        //  Add custom style to all appbars.......
+        appBarTheme: AppBarTheme(
+          titleTextStyle:
+              TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Veron'),
+        ),
+      ),
       home: MyHomePage(),
     );
   }
@@ -29,23 +38,40 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final List<Transaction> _userTransations = [
     Transaction(
-        id: 't1', title: 'New Shoes', amount: 12.2, date: DateTime.now()),
+      id: 't1',
+      title: 'New Shoes',
+      amount: 12.2,
+      date: DateTime.utc(2023, 2, 6),
+    ),
     Transaction(
-        id: 't1', title: 'Weekly Shoping', amount: 16.2, date: DateTime.now()),
+      id: 't2',
+      title: 'Weekly Shoping',
+      amount: 16.2,
+      date: DateTime.utc(2023, 2, 6),
+    ),
     Transaction(
-        id: 't1',
-        title: 'Weekly Shoping for cloth',
-        amount: 13.2,
-        date: DateTime.now()),
+      id: 't3',
+      title: 'Weekly Shoping for cloth',
+      amount: 13.2,
+      date: DateTime.utc(2023, 2, 6),
+    ),
   ];
 
+// This is getter fn which is return the list of recent expensess before 7 days..........
+  List<Transaction> get _recentTransactions {
+    return _userTransations.where((tx) {
+      return tx.date.isAfter(DateTime.now().subtract(Duration(days: 7)));
+    }).toList();
+  }
+
 //  This fn take data from child and post in Transations class....
-  void _addNewTransations(String txTitle, double txamount) {
+  void _addNewTransations(
+      String txTitle, double txamount, DateTime choosenDate) {
     print('Button have preesed');
     final addUser = Transaction(
       amount: txamount,
       title: txTitle,
-      date: DateTime.now(),
+      date: choosenDate,
       id: DateTime.now().toString(),
     );
     //  Here add data which user enter through form and reset the state of widget .....
@@ -59,13 +85,19 @@ class _MyHomePageState extends State<MyHomePage> {
     showModalBottomSheet(
         context: ctx,
         builder: (_) {
-          // As we Know NewTransations Widget need A function as Argument......
+          // As we Know NewTransations Widget need A function as Argument that fn brought the value from newTransation widget..
           return GestureDetector(
             child: NewTransations(_addNewTransations),
             onTap: () {},
             behavior: HitTestBehavior.opaque,
           );
         });
+  }
+
+  void _deleteTransations(String id) {
+    setState(() {
+      _userTransations.removeWhere((tx) => tx.id == id);
+    });
   }
 
   @override
@@ -88,21 +120,13 @@ class _MyHomePageState extends State<MyHomePage> {
           // mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Container(
-              width: double.infinity,
-              child: Card(
-                color: Colors.blue,
-                child: Container(
-                  child: Text('Chart'),
-                ),
-                elevation: 5,
-              ),
-            ),
+            Chart(_recentTransactions),
 
             // This widget is statefull widget containing the two more widgets.....
             // UserTransations()
 
-            TransationList(_userTransations),
+            TransationList(_userTransations, _deleteTransations),
+            // DialogFb3(),
           ],
         ),
       ),

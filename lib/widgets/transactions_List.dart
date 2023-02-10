@@ -5,60 +5,62 @@ import 'package:intl/intl.dart';
 class TransationList extends StatelessWidget {
 //  This is simply a variable cantaining the array value..
   final List<Transaction> alltransations;
+  final Function deleteFX;
 
 //  Here Constructor Call to accept value......
-  TransationList(this.alltransations);
+  TransationList(this.alltransations, this.deleteFX);
 
   @override
+  // What is context thing is here context hold metadata about widget tree positions size and so on...😎😋
   Widget build(BuildContext context) {
     return Container(
-      height: 470,
+      height: 570,
       //  Here List builder is important to create scrollabel list......
-      child: ListView.builder(
-        itemBuilder: ((context, index) {
-          return Card(
-            child: Row(
-              children: [
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-                  decoration: BoxDecoration(
-                    border: Border.all(width: 2, color: Colors.lightBlue),
+      child: alltransations.isEmpty
+          ? Container(
+              height: 20,
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 12,
                   ),
-                  padding: EdgeInsets.all(12),
-                  child: Text(
-                    //  In a dart $ have a special meaning so if we need use $ as a string so we can use like this \$....
-                    '\$${alltransations[index].amount.toStringAsFixed(2)}',
-                    style: TextStyle(
-                        fontSize: 19,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.lightBlue),
-                  ),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      //  Index here act like as loop variavbel [i] so we can print all intance value.....
-                      alltransations[index].title,
-                      style:
-                          TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  Image.asset(
+                    'assets/images/data.png',
+                    height: 160,
+                  )
+                ],
+              ),
+            )
+          : ListView.builder(
+              itemBuilder: ((context, index) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Card(
+                    elevation: 5,
+                    margin: EdgeInsets.symmetric(vertical: 1, horizontal: 2),
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        radius: 30,
+                        child: Text('\$${alltransations[index].amount}'),
+                      ),
+                      title: Text('${alltransations[index].title}'),
+                      subtitle: Text(DateFormat.yMMMd()
+                          .format(alltransations[index].date)),
+                      trailing: IconButton(
+                        icon: Icon(Icons.delete_forever),
+                        color: Colors.orange,
+                        onPressed: () => deleteFX(alltransations[index].id),
+                      ),
                     ),
-                    Text(
-                      DateFormat.yMMMd().format(alltransations[index].date),
-                      style: TextStyle(fontSize: 10, color: Colors.grey),
-                    )
-                  ],
-                )
-              ],
-            ),
-          );
-        }),
-        itemCount: alltransations.length,
+                  ),
+                );
+              }),
+              itemCount: alltransations.length,
 
-        // children: alltransations.map((tx) {
-        //   return
-        // }).toList(),
-      ),
+              // children: alltransations.map((tx) {
+              //   return
+              // }).toList(),
+            ),
     );
   }
 }
